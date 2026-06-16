@@ -30,6 +30,9 @@
 		"tailwind-merge": "^3.3.0",
 		"vaul": "^1.1.2"
 	},
+	"pnpm": {
+		"onlyBuiltDependencies": ["@biomejs/biome", "@tailwindcss/oxide", "sharp"]
+	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@tailwindcss/postcss": "^4",
