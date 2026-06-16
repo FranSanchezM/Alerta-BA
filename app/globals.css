@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+/* Class-based dark mode for next-themes */
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+	--color-primary: #7c3aed;
+	--color-primary-dark: #5b21b6;
+	--color-primary-light: #ede9fe;
+	--color-danger: #e11d48;
+	--color-danger-light: #fff1f2;
+	--color-safe: #059669;
+	--color-safe-light: #ecfdf5;
+	--color-assist: #2563eb;
+	--color-assist-light: #eff6ff;
+	--font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* {
+	-webkit-tap-highlight-color: transparent;
+}
+
+body {
+	-webkit-font-smoothing: antialiased;
+	overscroll-behavior: none;
+}
