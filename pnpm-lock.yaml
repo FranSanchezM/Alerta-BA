@@ -60,6 +60,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.1.7
+      '@types/geojson':
+        specifier: ^7946.0.14
+        version: 7946.0.16
       '@types/maplibre-gl':
         specifier: ^1.14.0
         version: 1.14.0
