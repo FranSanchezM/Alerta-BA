@@ -1,7 +1,8 @@
-export const dynamic = "force-dynamic";
+"use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AlertTriangle, MapPin, Phone, Map, Shield, ChevronRight, Clock } from "lucide-react";
+import { AlertTriangle, MapPin, Phone, Map, Shield, ChevronRight, Clock, Loader2 } from "lucide-react";
 import { BottomNav, SideNav } from "@/components/bottom-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { Incident, Stats } from "@/lib/types";
@@ -72,24 +73,25 @@ function relativeTime(isoDate: string): string {
 	return `Hace ${Math.round(diff / 86400)} días`;
 }
 
-async function getData(): Promise<{ incidents: Incident[]; stats: Stats }> {
-	const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const DEFAULT_STATS: Stats = { incidents_today: 0, risk_zones: 0, safe_places: 0 };
 
-	const [incidentsRes, statsRes] = await Promise.all([
-		fetch(`${base}/api/incidents?limit=5`, { next: { revalidate: 30 } }),
-		fetch(`${base}/api/stats`, { next: { revalidate: 60 } }),
-	]);
+export default function HomePage() {
+	const [incidents, setIncidents] = useState<Incident[]>([]);
+	const [stats, setStats] = useState<Stats>(DEFAULT_STATS);
+	const [loading, setLoading] = useState(true);
 
-	const incidents: Incident[] = incidentsRes.ok ? await incidentsRes.json() : [];
-	const stats: Stats = statsRes.ok
-		? await statsRes.json()
-		: { incidents_today: 0, risk_zones: 0, safe_places: 0 };
-
-	return { incidents, stats };
-}
-
-export default async function HomePage() {
-	const { incidents, stats } = await getData();
+	useEffect(() => {
+		Promise.all([
+			fetch("/api/incidents?limit=5").then((r) => r.json()),
+			fetch("/api/stats").then((r) => r.json()),
+		])
+			.then(([inc, st]) => {
+				setIncidents(Array.isArray(inc) ? inc : []);
+				setStats(st ?? DEFAULT_STATS);
+			})
+			.catch(console.error)
+			.finally(() => setLoading(false));
+	}, []);
 
 	return (
 		<div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
@@ -158,7 +160,11 @@ export default async function HomePage() {
 								key={label}
 								className="bg-white dark:bg-gray-900 rounded-2xl p-3 text-center border border-gray-100 dark:border-gray-800"
 							>
-								<div className="text-xl font-bold text-violet-700 dark:text-violet-400">{value}</div>
+								{loading ? (
+									<Loader2 className="w-5 h-5 text-violet-400 animate-spin mx-auto" />
+								) : (
+									<div className="text-xl font-bold text-violet-700 dark:text-violet-400">{value}</div>
+								)}
 								<div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 leading-tight">{label}</div>
 							</div>
 						))}
@@ -176,7 +182,11 @@ export default async function HomePage() {
 						</div>
 
 						<div className="space-y-2">
-							{incidents.length === 0 ? (
+							{loading ? (
+								<div className="flex items-center justify-center py-8">
+									<Loader2 className="w-6 h-6 text-violet-400 animate-spin" />
+								</div>
+							) : incidents.length === 0 ? (
 								<div className="text-center py-8 text-sm text-gray-400 dark:text-gray-600">
 									Sin reportes recientes
 								</div>
