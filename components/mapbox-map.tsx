@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import type { Incident, SafePlace } from "@/lib/types";
 import maplibregl from "maplibre-gl";
+import type { FeatureCollection, Point } from "geojson";
 // CSS importado en globals.css para evitar problemas con dynamic import
 
 // ─── Estilos CARTO — sin API key, 100% gratis ────────────────────────────────
@@ -33,7 +34,7 @@ const TYPE_LABEL: Record<string, string> = {
 };
 
 // ─── GeoJSON helpers ──────────────────────────────────────────────────────────
-function toIncidentsGeoJSON(incidents: Incident[]): GeoJSON.FeatureCollection {
+function toIncidentsGeoJSON(incidents: Incident[]): FeatureCollection {
 	return {
 		type: "FeatureCollection",
 		features: incidents.map((inc) => ({
@@ -52,7 +53,7 @@ function toIncidentsGeoJSON(incidents: Incident[]): GeoJSON.FeatureCollection {
 	};
 }
 
-function toSafePlacesGeoJSON(places: SafePlace[]): GeoJSON.FeatureCollection {
+function toSafePlacesGeoJSON(places: SafePlace[]): FeatureCollection {
 	return {
 		type: "FeatureCollection",
 		features: places.map((p) => ({
@@ -162,7 +163,7 @@ function addInteractions(map: maplibregl.Map) {
 		const f = e.features?.[0];
 		if (!f) return;
 		popup
-			.setLngLat((f.geometry as GeoJSON.Point).coordinates as [number, number])
+			.setLngLat((f.geometry as Point).coordinates as [number, number])
 			.setHTML(incidentHTML(f.properties as Record<string, string>))
 			.addTo(map);
 	});
@@ -171,7 +172,7 @@ function addInteractions(map: maplibregl.Map) {
 		const f = e.features?.[0];
 		if (!f) return;
 		popup
-			.setLngLat((f.geometry as GeoJSON.Point).coordinates as [number, number])
+			.setLngLat((f.geometry as Point).coordinates as [number, number])
 			.setHTML(safeHTML(f.properties as Record<string, string>))
 			.addTo(map);
 	});
@@ -185,7 +186,7 @@ function addInteractions(map: maplibregl.Map) {
 			(err, zoom) => {
 				if (err) return;
 				map.easeTo({
-					center: (features[0].geometry as GeoJSON.Point).coordinates as [number, number],
+					center: (features[0].geometry as Point).coordinates as [number, number],
 					zoom:   (zoom ?? 14) + 0.5,
 				});
 			},

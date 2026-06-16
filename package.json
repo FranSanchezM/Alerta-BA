@@ -36,6 +36,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@tailwindcss/postcss": "^4",
+		"@types/geojson": "^7946.0.14",
 		"@types/maplibre-gl": "^1.14.0",
 		"@types/node": "^20",
 		"@types/react": "^19",
