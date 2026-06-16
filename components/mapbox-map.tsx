@@ -177,20 +177,15 @@ function addInteractions(map: maplibregl.Map) {
 			.addTo(map);
 	});
 
-	map.on("click", "clusters", (e) => {
+	map.on("click", "clusters", async (e) => {
 		const features = map.queryRenderedFeatures(e.point, { layers: ["clusters"] });
 		const clusterId = features[0]?.properties?.cluster_id;
 		if (!clusterId) return;
-		(map.getSource("incidents") as maplibregl.GeoJSONSource).getClusterExpansionZoom(
-			clusterId,
-			(err, zoom) => {
-				if (err) return;
-				map.easeTo({
-					center: (features[0].geometry as Point).coordinates as [number, number],
-					zoom:   (zoom ?? 14) + 0.5,
-				});
-			},
-		);
+		const zoom = await (map.getSource("incidents") as maplibregl.GeoJSONSource).getClusterExpansionZoom(clusterId);
+		map.easeTo({
+			center: (features[0].geometry as Point).coordinates as [number, number],
+			zoom:   zoom + 0.5,
+		});
 	});
 
 	for (const layer of ["incident-points", "safe-points", "clusters"]) {
