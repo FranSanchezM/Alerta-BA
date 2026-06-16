@@ -22,7 +22,7 @@
 		"clsx": "^2.1.1",
 		"lucide-react": "^0.511.0",
 		"maplibre-gl": "^5.24.0",
-		"next": "15.3.2",
+		"next": "16.2.9",
 		"next-themes": "^0.4.6",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
@@ -31,7 +31,11 @@
 		"vaul": "^1.1.2"
 	},
 	"pnpm": {
-		"onlyBuiltDependencies": ["@biomejs/biome", "@tailwindcss/oxide", "sharp"]
+		"onlyBuiltDependencies": [
+			"@biomejs/biome",
+			"@tailwindcss/oxide",
+			"sharp"
+		]
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
