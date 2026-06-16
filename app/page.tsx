@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { AlertTriangle, MapPin, Phone, Map, Shield, ChevronRight, Clock } from "lucide-react";
 import { BottomNav, SideNav } from "@/components/bottom-nav";
