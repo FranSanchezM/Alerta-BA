@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AlertTriangle, MapPin, Phone, Map, Shield, ChevronRight, Clock, Loader2 } from "lucide-react";
 import { BottomNav, SideNav } from "@/components/bottom-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ColiFooter } from "@/components/coli-footer";
 import type { Incident, Stats } from "@/lib/types";
 
 const actions = [
@@ -221,6 +222,7 @@ export default function HomePage() {
 						</div>
 					</div>
 				</div>
+				<ColiFooter />
 			</main>
 
 			<BottomNav />

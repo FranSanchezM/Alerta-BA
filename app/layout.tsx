@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ColiBadge } from "@/components/coli-badge";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 			<body className="bg-gray-50 dark:bg-gray-950 font-sans antialiased transition-colors">
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					{children}
+					<ColiBadge />
 				</ThemeProvider>
 			</body>
 		</html>

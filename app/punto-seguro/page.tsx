@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { MapPin, Navigation, Clock, ShoppingBag, Pill, Coffee, BookOpen, Building, Search, Star, Loader2 } from "lucide-react";
 import { BottomNav, SideNav } from "@/components/bottom-nav";
 import { PageHeader } from "@/components/page-header";
+import { ColiFooter } from "@/components/coli-footer";
 import { cn } from "@/lib/utils";
 import type { SafePlace, SafePlaceCategory } from "@/lib/types";
 
@@ -190,6 +191,7 @@ export default function PuntoSeguroPage() {
 						)}
 					</div>
 				</div>
+				<ColiFooter />
 			</main>
 			<BottomNav />
 		</div>

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { BottomNav, SideNav } from "@/components/bottom-nav";
 import { PageHeader } from "@/components/page-header";
+import { ColiFooter } from "@/components/coli-footer";
 import { cn } from "@/lib/utils";
 import type { CreateIncidentPayload, IncidentType } from "@/lib/types";
 
@@ -313,6 +314,7 @@ export default function DenunciarPage() {
 						)}
 					</div>
 				</div>
+				<ColiFooter />
 			</main>
 			<BottomNav />
 		</div>

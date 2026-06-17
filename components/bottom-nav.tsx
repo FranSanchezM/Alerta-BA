@@ -17,8 +17,8 @@ export function BottomNav() {
 	const pathname = usePathname();
 
 	return (
-		<nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 z-50 md:hidden">
-			<div className="flex items-center justify-around h-16 max-w-lg mx-auto px-1">
+		<nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+			<div className="flex items-center justify-around h-16 max-w-lg mx-auto px-1 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
 				{navItems.map(({ href, icon: Icon, label }) => {
 					const isActive = pathname === href;
 					return (
@@ -43,6 +43,7 @@ export function BottomNav() {
 		</nav>
 	);
 }
+
 
 /* Sidebar nav for desktop (md+) */
 export function SideNav() {
@@ -84,6 +85,16 @@ export function SideNav() {
 					className="flex items-center justify-center gap-2 w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold rounded-xl transition-colors"
 				>
 					Emergencia 911
+				</a>
+				<a
+					href="https://www.coli.com.ar/"
+					target="_blank"
+					rel="noopener noreferrer"
+					className="flex items-center justify-center gap-1.5 mt-3"
+				>
+					{/* eslint-disable-next-line @next/next/no-img-element */}
+					<img src="https://www.coli.com.ar/colibri-web.png" alt="Colidevs" className="w-3.5 h-3.5 object-contain opacity-60" />
+					<span className="text-[10px] text-gray-400 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-400 transition-colors">by colidevs.</span>
 				</a>
 			</div>
 		</aside>

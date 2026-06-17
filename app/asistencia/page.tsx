@@ -1,6 +1,7 @@
 import { Phone, Heart, Scale, ExternalLink, MessageCircle, ChevronRight } from "lucide-react";
 import { BottomNav, SideNav } from "@/components/bottom-nav";
 import { PageHeader } from "@/components/page-header";
+import { ColiFooter } from "@/components/coli-footer";
 
 const emergency = [
 	{ number: "144", label: "Violencia de género", sub: "Línea nacional, gratuita, 24 hs", color: "rose" },
@@ -181,6 +182,7 @@ export default function AsistenciaPage() {
 						</a>
 					</div>
 				</div>
+				<ColiFooter />
 			</main>
 
 			<BottomNav />
