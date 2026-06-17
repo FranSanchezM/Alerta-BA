@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AlertTriangle, MapPin, Phone, Map, Shield, ChevronRight, Clock, Loader2 } from "lucide-react";
+import { AlertTriangle, MapPin, Phone, Map, Shield, ChevronRight, Clock, Loader2, X, MessageSquare, Footprints, Eye, Hand, Camera, Siren, FileText, Calendar } from "lucide-react";
+import { Drawer } from "vaul";
 import { BottomNav, SideNav } from "@/components/bottom-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ColiFooter } from "@/components/coli-footer";
@@ -76,10 +77,125 @@ function relativeTime(isoDate: string): string {
 
 const DEFAULT_STATS: Stats = { incidents_today: 0, risk_zones: 0, safe_places: 0 };
 
+const INCIDENT_ICONS: Record<string, React.ElementType> = {
+	verbal: MessageSquare,
+	seguimiento: Footprints,
+	exhibicionismo: Eye,
+	contacto: Hand,
+	fotografia: Camera,
+	intimidacion: Siren,
+	otro: AlertTriangle,
+};
+
+const INCIDENT_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
+	verbal:        { bg: "bg-orange-100 dark:bg-orange-950",  text: "text-orange-600 dark:text-orange-400",  dot: "bg-orange-500" },
+	seguimiento:   { bg: "bg-rose-100 dark:bg-rose-950",      text: "text-rose-600 dark:text-rose-400",      dot: "bg-rose-500" },
+	exhibicionismo:{ bg: "bg-red-100 dark:bg-red-950",        text: "text-red-600 dark:text-red-400",        dot: "bg-red-500" },
+	contacto:      { bg: "bg-rose-100 dark:bg-rose-950",      text: "text-rose-700 dark:text-rose-300",      dot: "bg-rose-600" },
+	fotografia:    { bg: "bg-amber-100 dark:bg-amber-950",    text: "text-amber-600 dark:text-amber-400",    dot: "bg-orange-400" },
+	intimidacion:  { bg: "bg-red-100 dark:bg-red-950",        text: "text-red-700 dark:text-red-300",        dot: "bg-red-600" },
+	otro:          { bg: "bg-gray-100 dark:bg-gray-800",      text: "text-gray-500 dark:text-gray-400",      dot: "bg-gray-400" },
+};
+
+function formatFullDate(isoDate: string): string {
+	return new Date(isoDate).toLocaleString("es-AR", {
+		weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit",
+	});
+}
+
+function IncidentDrawer({ incident, onClose }: { incident: Incident; onClose: () => void }) {
+	const Icon = INCIDENT_ICONS[incident.type] ?? AlertTriangle;
+	const colors = INCIDENT_COLORS[incident.type] ?? INCIDENT_COLORS.otro;
+	const label = INCIDENT_LABELS[incident.type] ?? incident.type;
+
+	return (
+		<Drawer.Root open onOpenChange={(open) => { if (!open) onClose(); }}>
+			<Drawer.Portal>
+				<Drawer.Overlay className="fixed inset-0 bg-black/50 z-50" />
+				<Drawer.Content className="fixed bottom-0 left-0 right-0 z-50 flex flex-col rounded-t-3xl bg-white dark:bg-gray-900 max-h-[85vh]">
+					{/* Handle */}
+					<div className="flex justify-center pt-3 pb-1">
+						<div className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700" />
+					</div>
+
+					<Drawer.Title className="sr-only">{INCIDENT_LABELS[incident.type] ?? incident.type}</Drawer.Title>
+					<div className="overflow-y-auto px-5 pb-10 pt-2">
+						{/* Header */}
+						<div className="flex items-start justify-between mb-5">
+							<div className="flex items-center gap-3">
+								<div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${colors.bg}`}>
+									<Icon className={`w-6 h-6 ${colors.text}`} />
+								</div>
+								<div>
+									<h2 className="font-bold text-lg text-gray-900 dark:text-gray-100">{label}</h2>
+									<div className="flex items-center gap-1 mt-0.5">
+										<Clock className="w-3 h-3 text-gray-400" />
+										<span className="text-xs text-gray-400 dark:text-gray-500">{relativeTime(incident.created_at)}</span>
+									</div>
+								</div>
+							</div>
+							<button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+								<X className="w-4 h-4 text-gray-500" />
+							</button>
+						</div>
+
+						{/* Location */}
+						<div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 mb-3">
+							<div className="flex items-center gap-2 mb-1">
+								<MapPin className="w-4 h-4 text-violet-500" />
+								<span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Ubicación</span>
+							</div>
+							<p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+								{incident.address ?? "Dirección no disponible"}
+							</p>
+							{incident.neighborhood && (
+								<p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{incident.neighborhood}, CABA</p>
+							)}
+						</div>
+
+						{/* Date */}
+						<div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 mb-3">
+							<div className="flex items-center gap-2 mb-1">
+								<Calendar className="w-4 h-4 text-violet-500" />
+								<span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Fecha y hora</span>
+							</div>
+							<p className="text-sm font-medium text-gray-900 dark:text-gray-100 capitalize">
+								{formatFullDate(incident.created_at)}
+							</p>
+						</div>
+
+						{/* Description */}
+						<div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 mb-3">
+							<div className="flex items-center gap-2 mb-1">
+								<FileText className="w-4 h-4 text-violet-500" />
+								<span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Descripción</span>
+							</div>
+							{incident.description ? (
+								<p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{incident.description}</p>
+							) : (
+								<p className="text-sm text-gray-400 dark:text-gray-600 italic">Sin descripción adicional</p>
+							)}
+						</div>
+
+						{/* Anonymous badge */}
+						<div className="flex items-center gap-2 px-1">
+							<div className={`w-2 h-2 rounded-full ${colors.dot}`} />
+							<span className="text-xs text-gray-400 dark:text-gray-500">
+								{incident.anonymous ? "Reporte anónimo" : "Reporte identificado"}
+							</span>
+						</div>
+					</div>
+				</Drawer.Content>
+			</Drawer.Portal>
+		</Drawer.Root>
+	);
+}
+
 export default function HomePage() {
 	const [incidents, setIncidents] = useState<Incident[]>([]);
 	const [stats, setStats] = useState<Stats>(DEFAULT_STATS);
 	const [loading, setLoading] = useState(true);
+	const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
 
 	useEffect(() => {
 		Promise.all([
@@ -193,9 +309,10 @@ export default function HomePage() {
 								</div>
 							) : (
 								incidents.map((incident) => (
-									<div
+									<button
 										key={incident.id}
-										className="bg-white dark:bg-gray-900 rounded-2xl px-4 py-3 flex items-center gap-3 border border-gray-100 dark:border-gray-800"
+										onClick={() => setSelectedIncident(incident)}
+										className="w-full bg-white dark:bg-gray-900 rounded-2xl px-4 py-3 flex items-center gap-3 border border-gray-100 dark:border-gray-800 text-left active:scale-[0.98] transition-transform"
 									>
 										<div className={`w-2 h-2 rounded-full flex-shrink-0 ${DOT_COLOR[incident.type] ?? "bg-gray-400"}`} />
 										<div className="flex-1 min-w-0">
@@ -216,7 +333,7 @@ export default function HomePage() {
 											</span>
 										</div>
 										<ChevronRight className="w-4 h-4 text-gray-200 dark:text-gray-700 flex-shrink-0" />
-									</div>
+									</button>
 								))
 							)}
 						</div>
@@ -226,6 +343,13 @@ export default function HomePage() {
 			</main>
 
 			<BottomNav />
+
+			{selectedIncident && (
+				<IncidentDrawer
+					incident={selectedIncident}
+					onClose={() => setSelectedIncident(null)}
+				/>
+			)}
 		</div>
 	);
 }
