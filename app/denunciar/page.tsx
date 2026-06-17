@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import {
 	MapPin, Camera, ChevronRight, CheckCircle2, Loader2,
 	MessageSquare, AlertTriangle, Eye, Footprints, Hand,
@@ -10,6 +11,11 @@ import { BottomNav, SideNav } from "@/components/bottom-nav";
 import { PageHeader } from "@/components/page-header";
 import { ColiFooter } from "@/components/coli-footer";
 import { cn } from "@/lib/utils";
+
+const LocationPicker = dynamic(
+	() => import("@/components/location-picker").then((m) => m.LocationPicker),
+	{ ssr: false, loading: () => <div className="w-full h-52 rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse" /> },
+);
 import type { CreateIncidentPayload, IncidentType } from "@/lib/types";
 
 const incidentTypes = [
@@ -191,47 +197,47 @@ export default function DenunciarPage() {
 						{/* STEP 2 */}
 						{step === "ubicacion" && (
 							<div className="space-y-4">
-								<p className="text-sm text-gray-500 dark:text-gray-400">Confirmá la ubicación del incidente.</p>
-								<div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-									<div className="h-36 bg-gradient-to-br from-emerald-100 dark:from-emerald-950 to-teal-100 dark:to-teal-950 flex items-center justify-center relative">
-										{geo.loading ? (
-											<div className="flex flex-col items-center gap-2">
-												<Loader2 className="w-6 h-6 text-emerald-500 animate-spin" />
-												<span className="text-xs text-emerald-600 dark:text-emerald-400">Obteniendo ubicación...</span>
-											</div>
-										) : (
-											<div className="flex flex-col items-center">
-												<MapPin className="w-8 h-8 text-rose-600 drop-shadow" />
-												<div className="mt-1 bg-white dark:bg-gray-900 rounded-lg px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-200 shadow">
-													{geo.error ? "Ubicación manual" : "Tu ubicación actual"}
+								{geo.loading ? (
+									<div className="flex items-center justify-center gap-2 py-6 text-sm text-gray-400">
+										<Loader2 className="w-4 h-4 animate-spin" /> Obteniendo ubicación...
+									</div>
+								) : (
+									<>
+										<p className="text-sm text-gray-500 dark:text-gray-400">
+											Arrastrá el pin para ajustar la ubicación exacta del incidente.
+										</p>
+										<LocationPicker
+											lat={geo.lat}
+											lng={geo.lng}
+											onLocationChange={(lat, lng, address) =>
+												setGeo((g) => ({ ...g, lat, lng, address }))
+											}
+										/>
+										<div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4">
+											<div className="flex items-start gap-3">
+												<MapPin className="w-4 h-4 text-rose-500 mt-0.5 shrink-0" />
+												<div>
+													<div className="font-medium text-sm text-gray-900 dark:text-gray-100">{geo.address}</div>
+													{geo.lat && (
+														<div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+															{geo.lat.toFixed(5)}, {geo.lng?.toFixed(5)}
+														</div>
+													)}
 												</div>
 											</div>
-										)}
-									</div>
-									<div className="p-4">
-										<div className="flex items-start gap-3">
-											<MapPin className="w-4 h-4 text-rose-500 mt-0.5 shrink-0" />
-											<div>
-												<div className="font-medium text-sm text-gray-900 dark:text-gray-100">{geo.address}</div>
-												{geo.lat && (
-													<div className="text-xs text-gray-400 dark:text-gray-500">
-														{geo.lat.toFixed(5)}, {geo.lng?.toFixed(5)}
-													</div>
-												)}
+										</div>
+										<div className="grid grid-cols-2 gap-3">
+											<div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4">
+												<div className="text-xs text-gray-400 dark:text-gray-500 mb-1">Fecha</div>
+												<div className="font-medium text-sm text-gray-900 dark:text-gray-100 capitalize">{dateStr}</div>
+											</div>
+											<div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4">
+												<div className="text-xs text-gray-400 dark:text-gray-500 mb-1">Hora</div>
+												<div className="font-medium text-sm text-gray-900 dark:text-gray-100">{timeStr}</div>
 											</div>
 										</div>
-									</div>
-								</div>
-								<div className="grid grid-cols-2 gap-3">
-									<div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4">
-										<div className="text-xs text-gray-400 dark:text-gray-500 mb-1">Fecha</div>
-										<div className="font-medium text-sm text-gray-900 dark:text-gray-100 capitalize">{dateStr}</div>
-									</div>
-									<div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4">
-										<div className="text-xs text-gray-400 dark:text-gray-500 mb-1">Hora</div>
-										<div className="font-medium text-sm text-gray-900 dark:text-gray-100">{timeStr}</div>
-									</div>
-								</div>
+									</>
+								)}
 								<button onClick={() => setStep("descripcion")} disabled={geo.loading}
 									className="w-full py-4 bg-rose-600 disabled:opacity-60 text-white font-semibold rounded-2xl flex items-center justify-center gap-2">
 									Confirmar ubicación <ChevronRight className="w-4 h-4" />

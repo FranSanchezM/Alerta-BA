@@ -203,10 +203,16 @@ export interface MapboxMapProps {
 }
 
 export function MapboxMap({ incidents, safePlaces, showIncidents, showSafePlaces }: MapboxMapProps) {
-	const containerRef = useRef<HTMLDivElement>(null);
-	const mapRef       = useRef<maplibregl.Map | null>(null);
-	const loadedRef    = useRef(false);
+	const containerRef    = useRef<HTMLDivElement>(null);
+	const mapRef          = useRef<maplibregl.Map | null>(null);
+	const loadedRef       = useRef(false);
+	// Refs para los props — evitan el problema de closure cuando el mapa carga después del fetch
+	const incidentsRef    = useRef(incidents);
+	const safePlacesRef   = useRef(safePlaces);
 	const { resolvedTheme } = useTheme();
+
+	useEffect(() => { incidentsRef.current = incidents; }, [incidents]);
+	useEffect(() => { safePlacesRef.current = safePlaces; }, [safePlaces]);
 
 	// ── Inicializar ──────────────────────────────────────────────────────────
 	useEffect(() => {
@@ -225,14 +231,14 @@ export function MapboxMap({ incidents, safePlaces, showIncidents, showSafePlaces
 		map.addControl(new maplibregl.AttributionControl({ compact: true }));
 
 		map.on("load", () => {
-			// ← Clave: resize para que el canvas tome las dimensiones reales del contenedor
 			map.resize();
 			loadedRef.current = true;
 			addSources(map);
 			addLayers(map);
 			addInteractions(map);
-			(map.getSource("incidents") as maplibregl.GeoJSONSource).setData(toIncidentsGeoJSON(incidents));
-			(map.getSource("safe-places") as maplibregl.GeoJSONSource).setData(toSafePlacesGeoJSON(safePlaces));
+			// Usar refs para capturar los datos más recientes, no los del closure inicial
+			(map.getSource("incidents") as maplibregl.GeoJSONSource).setData(toIncidentsGeoJSON(incidentsRef.current));
+			(map.getSource("safe-places") as maplibregl.GeoJSONSource).setData(toSafePlacesGeoJSON(safePlacesRef.current));
 		});
 
 		mapRef.current = map;
